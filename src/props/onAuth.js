@@ -20,11 +20,12 @@ type GetOnAuthOptions = {|
     facilitatorAccessToken : string,
     createOrder : CreateOrder,
     createSubscription : ?CreateSubscription,
-    clientID : string
+    clientID : string,
+    bypassUpgrade? : boolean
 |};
 
-export function getOnAuth({ facilitatorAccessToken, createOrder, createSubscription, clientID } : GetOnAuthOptions) : OnAuth {
-    const upgradeLSAT = LSAT_UPGRADE_EXCLUDED_MERCHANTS.indexOf(clientID) === -1;
+export function getOnAuth({ facilitatorAccessToken, createOrder, createSubscription, clientID, bypassUpgrade = false } : GetOnAuthOptions) : OnAuth {
+    const upgradeLSAT = LSAT_UPGRADE_EXCLUDED_MERCHANTS.indexOf(clientID) === -1 || bypassUpgrade === false;
 
     return ({ accessToken } : XOnAuthDataType) => {
         getLogger().info(`spb_onauth_access_token_${ accessToken ? 'present' : 'not_present' }`);
