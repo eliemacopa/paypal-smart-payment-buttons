@@ -20,8 +20,7 @@ type GetOnAuthOptions = {|
     facilitatorAccessToken : string,
     createOrder : CreateOrder,
     createSubscription : ?CreateSubscription,
-    clientID : string,
-    bypassUpgrade? : boolean
+    clientID : string
 |};
 
 export function getOnAuth({ facilitatorAccessToken, createOrder, createSubscription, clientID } : GetOnAuthOptions) : OnAuth {
