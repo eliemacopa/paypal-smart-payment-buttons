@@ -148,10 +148,7 @@ export type AuthorizationCaptureOptions = {|
     forceRestAPI? : boolean
 |};
 
-export type AuthorizationCaptureResponse = {|
-    id : string,
-    status : string
-|};
+export type AuthorizationCaptureResponse = {||};
 
 export function captureAuthorization(data : AuthorizationCaptureData, { orderID, facilitatorAccessToken, buyerAccessToken, partnerAttributionID, forceRestAPI } : AuthorizationCaptureOptions) : ZalgoPromise<AuthorizationCaptureResponse> {
     getLogger().info(`rest_api_capture_authorization`);
@@ -162,7 +159,11 @@ export function captureAuthorization(data : AuthorizationCaptureData, { orderID,
         if (!id) {
             throw new Error(`Could not find authorization id to capture authorization.`);
         }
-    
+        
+        if (!data) {
+            throw new Error(`Must pass data into capture in order to complete payment for intent=authorize.`);
+        }
+
         return callRestAPI({
             accessToken: facilitatorAccessToken,
             method:      'post',
