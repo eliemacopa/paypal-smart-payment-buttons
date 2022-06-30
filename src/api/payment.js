@@ -148,7 +148,10 @@ export type AuthorizationCaptureOptions = {|
     forceRestAPI? : boolean
 |};
 
-export type AuthorizationCaptureResponse = {||};
+export type AuthorizationCaptureResponse = {|
+    id : string,
+    status : string
+|};
 
 export function captureAuthorization(data : AuthorizationCaptureData, { orderID, facilitatorAccessToken, buyerAccessToken, partnerAttributionID, forceRestAPI } : AuthorizationCaptureOptions) : ZalgoPromise<AuthorizationCaptureResponse> {
     getLogger().info(`rest_api_capture_authorization`);
