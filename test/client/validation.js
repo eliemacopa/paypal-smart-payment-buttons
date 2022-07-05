@@ -669,7 +669,9 @@ describe('validation cases', () => {
         });
     });
 
-    it('should render a button with intent=capture and order id with intent=authorize, click the button, and render checkout, then fail to approve the payment', async () => {
+    // TODOd: This test is flakey is being quarantined
+    // Shane Brunson - 05 July 2022
+    it.skip('should render a button with intent=capture and order id with intent=authorize, click the button, and render checkout, then fail to approve the payment', async () => {
         return await wrapPromise(async ({ expect, avoid }) => {
 
             const orderID = generateOrderID();
