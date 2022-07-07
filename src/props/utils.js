@@ -90,11 +90,8 @@ export const updateShippingOptions = ({ option, options } : {| option: ShippingO
 };
 
 export const updateOperationForShippingOptions = ({ queries } : {| queries : {| [$Values<typeof ON_SHIPPING_CHANGE_PATHS>] : Query |} |}) : $ReadOnlyArray<Query> => {
-    const options = queries[ON_SHIPPING_CHANGE_PATHS.OPTIONS];
-
-    if (options) {
-        options.op = 'replace';
-        queries[ON_SHIPPING_CHANGE_PATHS.OPTIONS] = options;
+    if (queries[ON_SHIPPING_CHANGE_PATHS.OPTIONS]) {
+        queries[ON_SHIPPING_CHANGE_PATHS.OPTIONS].op = 'replace';
     }
 
     return convertQueriesToArray({ queries });
