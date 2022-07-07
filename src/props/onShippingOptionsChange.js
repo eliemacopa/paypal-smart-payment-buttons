@@ -129,7 +129,7 @@ export function buildXOnShippingOptionsChangeActions({ data, actions: passedActi
             return getSupplementalOrderInfo(orderID).then(supplementalData => {
                 let queries = [];
                 const hasShippingMethods = supplementalData?.checkoutSession?.cart?.shippingMethods
-                    && supplementalData?.checkoutSession?.cart?.shippingMethods.length;
+                    && supplementalData?.checkoutSession?.cart?.shippingMethods.length > 0;
                 
                 if (hasShippingMethods) {
                     queries = updateOperationForShippingOptions({ queries: patchQueries });
@@ -147,7 +147,7 @@ export function buildXOnShippingOptionsChangeActions({ data, actions: passedActi
             return getSupplementalOrderInfo(orderID).then(supplementalData => {
                 let queries = [];
                 const hasShippingMethods = supplementalData?.checkoutSession?.cart?.shippingMethods
-                    && supplementalData?.checkoutSession?.cart?.shippingMethods.length;
+                    && supplementalData?.checkoutSession?.cart?.shippingMethods.length > 0;
                 
                 if (hasShippingMethods) {
                     queries = updateOperationForShippingOptions({ queries: patchQueries });
