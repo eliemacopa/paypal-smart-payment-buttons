@@ -153,8 +153,8 @@ export function buildXOnShippingAddressChangeActions({ data, actions: passedActi
         patch: () => {
             return getSupplementalOrderInfo(orderID).then(supplementalData => {
                 let queries = [];
-                const hasShippingMethods = supplementalData?.checkoutSession?.cart?.shippingMethods
-                    && supplementalData?.checkoutSession?.cart?.shippingMethods.length > 0;
+                const shippingMethods = supplementalData?.checkoutSession?.cart?.shippingMethods || [];
+                const hasShippingMethods = Boolean(shippingMethods.length > 0);
                 
                 if (hasShippingMethods) {
                     queries = updateOperationForShippingOptions({ queries: patchQueries });
@@ -171,8 +171,8 @@ export function buildXOnShippingAddressChangeActions({ data, actions: passedActi
         query: () => {
             return getSupplementalOrderInfo(orderID).then(supplementalData => {
                 let queries = [];
-                const shippingMethods = supplementalData?.checkoutSession?.cart?.shippingMethods;
-                const hasShippingMethods = Boolean(shippingMethods?.length > 0);
+                const shippingMethods = supplementalData?.checkoutSession?.cart?.shippingMethods || [];
+                const hasShippingMethods = Boolean(shippingMethods.length > 0);
                 
                 if (hasShippingMethods) {
                     queries = updateOperationForShippingOptions({ queries: patchQueries });
