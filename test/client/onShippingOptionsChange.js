@@ -89,7 +89,7 @@ describe('onShippingOptionsChange', () => {
         }
     ];
 
-    it('should render a button, click the button, and render checkout, then pass onShippingOptionsChange callback to the parent and have SDK patch for client-side integrations', async () => {
+    it('should render a button, click the button, and render checkout, then pass onShippingOptionsChange callback to the parent with shipping methods in the checkout session and have SDK patch for client-side integrations', async () => {
         return await wrapPromise(async ({ expect, avoid }) => {
 
             const orderID = uniqueID();
@@ -222,6 +222,79 @@ describe('onShippingOptionsChange', () => {
 
             await clickButton(FUNDING.PAYPAL);
             getCheckoutDetails.done();
+        });
+    });
+
+    it('should render a button, click the button, and render checkout, then pass onShippingOptionsChange callback to the parent without shipping methods in checkout session and have SDK patch for client-side integrations', async () => {
+        return await wrapPromise(async ({ expect, avoid }) => {
+
+            const orderID = uniqueID();
+            const accessToken = uniqueID();
+            const payerID = 'YYYYYYYYYY';
+            const facilitatorAccessToken = uniqueID();
+
+            window.xprops.createOrder = mockAsyncProp(expect('createOrder', async () => {
+                return ZalgoPromise.try(() => {
+                    return orderID;
+                });
+            }));
+
+            window.xprops.onShippingOptionsChange = mockAsyncProp(expect('onShippingOptionsChange', async (data, actions) => {
+                const patchOrderMock = getRestfulPatchOrderApiMock({
+                    handler: expect('patchOrder', ({ headers }) => {
+                        if (headers.authorization !== `Bearer ${ facilitatorAccessToken }`) {
+                            throw new Error(`Expected call to come with correct facilitator access token`);
+                        }
+
+                        return {
+                            id: orderID
+                        };
+                    })
+                });
+                patchOrderMock.expectCalls();
+                await actions.patch();
+                patchOrderMock.done();
+            }));
+
+            mockFunction(window.paypal, 'Checkout', expect('Checkout', ({ original: CheckoutOriginal, args: [ props ] }) => {
+                props.onAuth({ accessToken });
+                mockFunction(props, 'onApprove', expect('onApprove', ({ original: onApproveOriginal, args: [ data, actions ] }) => {
+                    return onApproveOriginal({ ...data, payerID }, actions);
+                }));
+
+                const checkoutInstance = CheckoutOriginal(props);
+
+                mockFunction(checkoutInstance, 'renderTo', expect('renderTo', async ({ original: renderToOriginal, args }) => {
+                    return props.createOrder().then(id => {
+                        if (id !== orderID) {
+                            throw new Error(`Expected orderID to be ${ orderID }, got ${ id }`);
+                        }
+
+                        return renderToOriginal(...args).then(() => {
+                            return props.onShippingOptionsChange({
+                                orderID,
+                                amount,
+                                selected_shipping_option,
+                            }, { reject: avoid('reject') });
+                        });
+                    });
+                }));
+
+                return checkoutInstance;
+            }));
+
+            createButtonHTML();
+
+            await mockSetupButton({
+                facilitatorAccessToken,
+                merchantID:                    [ 'XYZ12345' ],
+                fundingEligibility:            DEFAULT_FUNDING_ELIGIBILITY,
+                personalization:               {},
+                buyerCountry:                  COUNTRY.US,
+                isCardFieldsExperimentEnabled: false
+            });
+
+            await clickButton(FUNDING.PAYPAL);
         });
     });
 
