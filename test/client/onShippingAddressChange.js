@@ -95,6 +95,68 @@ describe('onShippingAddressChange', () => {
             const payerID = 'YYYYYYYYYY';
             const facilitatorAccessToken = uniqueID();
 
+            const getCheckoutDetails = getGraphQLApiMock({
+                extraHandler: expect('upgradeLSATGQLCall', ({ data }) => {
+
+                    if (data.query.includes('query GetCheckoutDetails')) {
+                        return {
+                            data: {
+                                checkoutSession: {
+                                    cart: {
+                                        intent:  'capture',
+                                        amounts: {
+                                            total: {
+                                                currencyCode: 'USD'
+                                            }
+                                        },
+                                        shippingMethods: [
+                                            {
+                                                id: 'SHIP_1234',
+                                                label: 'Free Shipping',
+                                                type: 'SHIPPING',
+                                                selected: true,
+                                                amount: {
+                                                    value: '0.00',
+                                                    currency_code: 'USD'
+                                                }
+                                            },
+                                            {
+                                                id: 'SHIP_123',
+                                                label: 'Shipping',
+                                                type: 'SHIPPING',
+                                                selected: false,
+                                                amount: {
+                                                    value: '20.00',
+                                                    currency_code: 'USD'
+                                                }
+                                            },
+                                            {
+                                                id: 'SHIP_124',
+                                                label: 'Overnight',
+                                                type: 'SHIPPING',
+                                                selected: false,
+                                                amount: {
+                                                    value: '40.00',
+                                                    currency_code: 'USD'
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    payees: [
+                                        {
+                                            merchantId: 'XYZ12345',
+                                            email:       {
+                                                stringValue: 'xyz-us-b1@paypal.com'
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        };
+                    }
+                })
+            }).expectCalls();
+
             window.xprops.createOrder = mockAsyncProp(expect('createOrder', async () => {
                 return ZalgoPromise.try(() => {
                     return orderID;
@@ -157,6 +219,7 @@ describe('onShippingAddressChange', () => {
             });
 
             await clickButton(FUNDING.PAYPAL);
+            getCheckoutDetails.done();
         });
     });
 
