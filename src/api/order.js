@@ -650,9 +650,7 @@ type SupplementalOrderInfo = {|
             supplementary? : {|
                 initiationIntent? : string
             |},
-            category? : $Values<typeof ITEM_CATEGORY>,
-            shippingAddress? : ShippingAddress,
-            shippingMethods? : $ReadOnlyArray<ShippingMethod>
+            category? : $Values<typeof ITEM_CATEGORY>
         |},
         buyer? : {|
             userId? : string
@@ -672,6 +670,57 @@ type SupplementalOrderInfo = {|
 export type GetSupplementalOrderInfo = (string) => ZalgoPromise<SupplementalOrderInfo>;
 
 export const getSupplementalOrderInfo : GetSupplementalOrderInfo = memoize(orderID => {
+    return callGraphQL({
+        name:  'GetCheckoutDetails',
+        query: `
+            query GetCheckoutDetails($orderID: String!) {
+                checkoutSession(token: $orderID) {
+                    cart {
+                        amounts {
+                            total {
+                                currencyValue
+                                currencyCode
+                                currencyFormatSymbolISOCurrency
+                            }
+                        }
+                    }
+                    flags {
+                        isChangeShippingAddressAllowed
+                    }
+                }
+            }
+        `,
+        variables: { orderID },
+        headers:   {
+            [HEADERS.CLIENT_CONTEXT]: orderID
+        }
+    });
+});
+type ShippingOrderInfo = {|
+    checkoutSession : {|
+        cart : {|
+            amounts : {|
+                total : {|
+                    currencyFormatSymbolISOCurrency : string,
+                    currencyValue : string,
+                    currencyCode : string
+                |}
+            |},
+            shippingAddress? : ShippingAddress,
+            shippingMethods? : $ReadOnlyArray<ShippingMethod>
+        |},
+        buyer? : {|
+            userId? : string
+        |},
+        flags : {|
+            isChangeShippingAddressAllowed? : boolean
+        |}
+    |}
+|};
+
+export type GetShippingOrderInfo = (string) => ZalgoPromise<ShippingOrderInfo>;
+
+export const getShippingOrderInfo : GetShippingOrderInfo = orderID => {
     return callGraphQL({
         name:  'GetCheckoutDetails',
         query: `
@@ -731,7 +780,7 @@ export const getSupplementalOrderInfo : GetSupplementalOrderInfo = memoize(order
             [HEADERS.CLIENT_CONTEXT]: orderID
         }
     });
-});
+};
 
 export type DetailedOrderInfo = {|
     checkoutSession : {|
