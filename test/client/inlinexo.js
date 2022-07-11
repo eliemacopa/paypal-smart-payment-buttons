@@ -12,8 +12,7 @@ import {
     createButtonHTML,
     mockFunction,
     clickButton,
-    getRestfulGetOrderApiMock,
-    getRestfulAuthorizationsCaptureApiMock
+    getRestfulGetOrderApiMock
 } from './mocks';
 
 describe('Inline XO cases', () => {
