@@ -673,22 +673,56 @@ export const getSupplementalOrderInfo : GetSupplementalOrderInfo = memoize(order
     return callGraphQL({
         name:  'GetCheckoutDetails',
         query: `
-            query GetCheckoutDetails($orderID: String!) {
-                checkoutSession(token: $orderID) {
-                    cart {
-                        amounts {
-                            total {
-                                currencyValue
-                                currencyCode
-                                currencyFormatSymbolISOCurrency
-                            }
+        query GetCheckoutDetails($orderID: String!) {
+            checkoutSession(token: $orderID) {
+                cart {
+                    billingType
+                    intent
+                    paymentId
+                    billingToken
+                    amounts {
+                        total {
+                            currencyValue
+                            currencyCode
+                            currencyFormatSymbolISOCurrency
                         }
                     }
-                    flags {
-                        isChangeShippingAddressAllowed
+                    supplementary {
+                        initiationIntent
+                    }
+                    category
+                    shippingAddress {
+                        firstName
+                        lastName
+                        line1
+                        line2
+                        city
+                        state
+                        postalCode
+                        country
+                    }
+                    shippingMethods {
+                        id
+                        amount {
+                            currencyCode
+                            currencyValue
+                        }
+                        label
+                        selected
+                        type
+                    }
+                }
+                flags {
+                    isChangeShippingAddressAllowed
+                }
+                payees {
+                    merchantId
+                    email {
+                        stringValue
                     }
                 }
             }
+        }
         `,
         variables: { orderID },
         headers:   {
