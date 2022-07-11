@@ -691,26 +691,6 @@ export const getSupplementalOrderInfo : GetSupplementalOrderInfo = memoize(order
                         initiationIntent
                     }
                     category
-                    shippingAddress {
-                        firstName
-                        lastName
-                        line1
-                        line2
-                        city
-                        state
-                        postalCode
-                        country
-                    }
-                    shippingMethods {
-                        id
-                        amount {
-                            currencyCode
-                            currencyValue
-                        }
-                        label
-                        selected
-                        type
-                    }
                 }
                 flags {
                     isChangeShippingAddressAllowed
