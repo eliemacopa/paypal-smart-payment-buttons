@@ -151,9 +151,9 @@ export function buildXOnShippingAddressChangeActions({ data, actions: passedActi
         },
 
         patch: () => {
-            return getShippingOrderInfo(orderID).then(supplementalData => {
+            return getShippingOrderInfo(orderID).then(sessionData => {
                 let queries = [];
-                const shippingMethods = supplementalData?.checkoutSession?.cart?.shippingMethods || [];
+                const shippingMethods = sessionData?.checkoutSession?.cart?.shippingMethods || [];
                 const hasShippingMethods = Boolean(shippingMethods.length > 0);
                 
                 if (hasShippingMethods) {
@@ -169,9 +169,9 @@ export function buildXOnShippingAddressChangeActions({ data, actions: passedActi
         },
 
         query: () => {
-            return getShippingOrderInfo(orderID).then(supplementalData => {
+            return getShippingOrderInfo(orderID).then(sessionData => {
                 let queries = [];
-                const shippingMethods = supplementalData?.checkoutSession?.cart?.shippingMethods || [];
+                const shippingMethods = sessionData?.checkoutSession?.cart?.shippingMethods || [];
                 const hasShippingMethods = Boolean(shippingMethods.length > 0);
                 
                 if (hasShippingMethods) {
