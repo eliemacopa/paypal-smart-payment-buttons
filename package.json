@@ -94,7 +94,7 @@
     "typed-graphqlify": "^2.2.3"
   },
   "devDependencies": {
-    "@krakenjs/grabthar-release": "^2.4.0",
+    "@krakenjs/grabthar-release": "^3.0.0",
     "@krakenjs/grumbler-scripts": "^7.0.0",
     "@krakenjs/sync-browser-mocks": "^3.0.0",
     "@krakenjs/webpack-mem-compile": "^2.0.1",
