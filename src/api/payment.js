@@ -4,7 +4,7 @@ import type { ZalgoPromise } from '@krakenjs/zalgo-promise/src';
 import { FPTI_KEY } from '@paypal/sdk-constants/src';
 
 import { PAYMENTS_API_URL } from '../config';
-import { getLogger } from '../lib';
+import { getLogger, prepareLatencyInstrumentationTrackPayload } from '../lib';
 import { FPTI_TRANSITION, FPTI_CONTEXT_TYPE, HEADERS } from '../constants';
 import type { ApplePayPayment } from '../payment-flows/types';
 
@@ -31,6 +31,7 @@ export type PaymentResponse = {|
 
 export function createPayment(payment : PaymentCreateRequest, { facilitatorAccessToken, partnerAttributionID } : PaymentAPIOptions) : ZalgoPromise<PaymentResponse> {
     getLogger().info(`rest_api_create_payment_id`);
+    const createPaymentStartTime = Date.now();
 
     return callRestAPI({
         accessToken: facilitatorAccessToken,
@@ -42,6 +43,14 @@ export function createPayment(payment : PaymentCreateRequest, { facilitatorAcces
             [HEADERS.PARTNER_ATTRIBUTION_ID]: partnerAttributionID || ''
         }
     }).then(body => {
+        const createPaymentEndTime = Date.now();
+
+        getLogger().track(prepareLatencyInstrumentationTrackPayload(
+            'main:xo:paypal-components:smart-payment-buttons:payments:create', 
+            facilitatorAccessToken,
+            {start: createPaymentStartTime, tt: createPaymentEndTime - createPaymentStartTime}
+            ));
+
 
         const paymentID = body && body.id;
 

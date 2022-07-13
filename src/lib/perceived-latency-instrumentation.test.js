@@ -1,6 +1,7 @@
 /* @flow */
 
-import { prepareLatencyInstrumentationPayload } from './perceived-latency-instrumentation';
+import { prepareLatencyInstrumentationPayload, prepareLatencyInstrumentationTrackPayload } from './perceived-latency-instrumentation';
+import { FPTI_KEY } from '@paypal/sdk-constants/src';
 
 describe('customer perceived latency instrumentation utils', () => {
     describe('prepareLatencyInstrumentationPayload', () => {
@@ -22,6 +23,18 @@ describe('customer perceived latency instrumentation utils', () => {
             };
             expect(prepareLatencyInstrumentationPayload(responseStartTime, responseEndTime)).toEqual(preparedPayload);
 
+        });
+    });
+    describe('prepareLatencyInstrumentationTrackPayload', () => {
+        it('returns the CPL track payload', () => {
+            const expectedPayload = {
+                [FPTI_KEY.STATE]:                 'CPL_LATENCY_METRICS',
+                [FPTI_KEY.TRANSITION]:            'process_client_metrics',
+                [FPTI_KEY.CONTEXT_ID]:            'token',
+                [FPTI_KEY.PAGE]:                  'page',
+                [FPTI_KEY.CPL_COMP_METRICS]:      JSON.stringify({})
+            }
+            expect(prepareLatencyInstrumentationTrackPayload('page', 'token', {})).toEqual(expectedPayload);
         });
     });
 });
