@@ -1,7 +1,7 @@
 /* @flow */
 
 import { prepareLatencyInstrumentationPayload, prepareLatencyInstrumentationTrackPayload } from './perceived-latency-instrumentation';
-import { FPTI_KEY } from '@paypal/sdk-constants/src';
+import { FPTI_KEY, FPTI_FEED} from '@paypal/sdk-constants/src';
 
 describe('customer perceived latency instrumentation utils', () => {
     describe('prepareLatencyInstrumentationPayload', () => {
@@ -32,9 +32,10 @@ describe('customer perceived latency instrumentation utils', () => {
                 [FPTI_KEY.TRANSITION]:            'process_client_metrics',
                 [FPTI_KEY.CONTEXT_ID]:            'token',
                 [FPTI_KEY.PAGE]:                  'page',
+                [FPTI_KEY.FEED]:                  FPTI_FEED.PAYMENTS_SDK,
                 [FPTI_KEY.CPL_COMP_METRICS]:      JSON.stringify({})
             }
-            expect(prepareLatencyInstrumentationTrackPayload('page', 'token', {})).toEqual(expectedPayload);
+            expect(JSON.stringify(prepareLatencyInstrumentationTrackPayload('page', 'token', {}))).toEqual(JSON.stringify(expectedPayload));
         });
     });
 });

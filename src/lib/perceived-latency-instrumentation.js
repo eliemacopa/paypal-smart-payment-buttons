@@ -1,5 +1,5 @@
 /* @flow */
-import { FPTI_KEY } from '@paypal/sdk-constants/src';
+import { FPTI_KEY, FPTI_FEED } from '@paypal/sdk-constants/src';
 
 type InstrumentationPayload = {|
     comp? : mixed,
@@ -40,6 +40,7 @@ export function prepareLatencyInstrumentationTrackPayload (page : string, token 
         [FPTI_KEY.TRANSITION]:            'process_client_metrics',
         [FPTI_KEY.CONTEXT_ID]:            token,
         [FPTI_KEY.PAGE]:                  page,
+        [FPTI_KEY.FEED]:                  FPTI_FEED.PAYMENTS_SDK,
         [FPTI_KEY.CPL_COMP_METRICS]:      JSON.stringify(compMetrics)
     }
 }
