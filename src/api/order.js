@@ -6,7 +6,7 @@ import { CURRENCY, FPTI_KEY, FUNDING, WALLET_INSTRUMENT, INTENT } from '@paypal/
 import { request, noop, memoize, uniqueID, stringifyError } from '@krakenjs/belter/src';
 
 import { SMART_API_URI, ORDERS_API_URL, VALIDATE_PAYMENT_METHOD_API } from '../config';
-import { getLogger, setBuyerAccessToken } from '../lib';
+import { getLogger, prepareLatencyInstrumentationTrackPayload, setBuyerAccessToken } from '../lib';
 import { FPTI_TRANSITION, FPTI_CONTEXT_TYPE, HEADERS, SMART_PAYMENT_BUTTONS,
     INTEGRATION_ARTIFACT, ITEM_CATEGORY, USER_EXPERIENCE_FLOW, PRODUCT_FLOW, PREFER, ORDER_API_ERROR } from '../constants';
 import type { ShippingMethod, ShippingAddress } from '../payment-flows/types';
@@ -42,6 +42,8 @@ type OrderAPIOptions = {|
 
 export function createOrderID(order : OrderCreateRequest, { facilitatorAccessToken, partnerAttributionID } : OrderAPIOptions) : ZalgoPromise<string> {
     getLogger().info(`rest_api_create_order_id`);
+    const createOrderStartTime = Date.now();
+
     return callRestAPI({
         accessToken: facilitatorAccessToken,
         method:      'post',
@@ -53,6 +55,7 @@ export function createOrderID(order : OrderCreateRequest, { facilitatorAccessTok
             [ HEADERS.PREFER ]:                 PREFER.REPRESENTATION
         }
     }).then((body) : string => {
+        const createOrderEndTime = Date.now();
 
         const orderID = body && body.id;
 
@@ -66,6 +69,12 @@ export function createOrderID(order : OrderCreateRequest, { facilitatorAccessTok
             [FPTI_KEY.TOKEN]:        orderID,
             [FPTI_KEY.CONTEXT_ID]:   orderID
         });
+
+        getLogger().track(prepareLatencyInstrumentationTrackPayload(
+            'main:xo:paypal-components:smart-payment-buttons:orders:create', 
+            facilitatorAccessToken,
+            {start: createOrderStartTime, tt: createOrderEndTime - createOrderStartTime}
+            ));
 
         return orderID;
     });

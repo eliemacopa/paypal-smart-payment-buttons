@@ -45,13 +45,6 @@ export function createPayment(payment : PaymentCreateRequest, { facilitatorAcces
     }).then(body => {
         const createPaymentEndTime = Date.now();
 
-        getLogger().track(prepareLatencyInstrumentationTrackPayload(
-            'main:xo:paypal-components:smart-payment-buttons:payments:create', 
-            facilitatorAccessToken,
-            {start: createPaymentStartTime, tt: createPaymentEndTime - createPaymentStartTime}
-            ));
-
-
         const paymentID = body && body.id;
 
         if (!paymentID) {
@@ -64,6 +57,12 @@ export function createPayment(payment : PaymentCreateRequest, { facilitatorAcces
             [FPTI_KEY.TOKEN]:        paymentID,
             [FPTI_KEY.CONTEXT_ID]:   paymentID
         });
+
+        getLogger().track(prepareLatencyInstrumentationTrackPayload(
+            'main:xo:paypal-components:smart-payment-buttons:payments:create', 
+            facilitatorAccessToken,
+            {start: createPaymentStartTime, tt: createPaymentEndTime - createPaymentStartTime}
+            ));
 
         return body;
     });
