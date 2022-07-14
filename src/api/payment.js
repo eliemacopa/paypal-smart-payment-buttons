@@ -60,7 +60,7 @@ export function createPayment(payment : PaymentCreateRequest, { facilitatorAcces
 
         getLogger().track(prepareLatencyInstrumentationTrackPayload(
             'main:xo:paypal-components:smart-payment-buttons:payments:create', 
-            facilitatorAccessToken,
+            paymentID,
             {start: createPaymentStartTime, tt: createPaymentEndTime - createPaymentStartTime}
             ));
 

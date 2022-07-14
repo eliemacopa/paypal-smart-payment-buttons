@@ -72,7 +72,7 @@ export function createOrderID(order : OrderCreateRequest, { facilitatorAccessTok
 
         getLogger().track(prepareLatencyInstrumentationTrackPayload(
             'main:xo:paypal-components:smart-payment-buttons:orders:create', 
-            facilitatorAccessToken,
+            orderID,
             {start: createOrderStartTime, tt: createOrderEndTime - createOrderStartTime}
             ));
 
