@@ -28,13 +28,22 @@ export function prepareLatencyInstrumentationPayload (responseStartTime : number
     };
 }
 
+type InstrumentationTrackPayload = {|
+    [FPTI_KEY.STATE] : string,
+    [FPTI_KEY.TRANSITION] : string,
+    [FPTI_KEY.CONTEXT_ID] : string,
+    [FPTI_KEY.PAGE] : string,
+    [FPTI_KEY.FEED] : string,
+    [FPTI_KEY.CPL_COMP_METRICS] : mixed
+|};
+
 /**
  * Prepare instrumentation track Payload to be sent to logger
  * @param page
  * @param token
  * @param compMetrics
  */
-export function prepareLatencyInstrumentationTrackPayload (page : string, token : string, compMetrics : object) {
+export function prepareLatencyInstrumentationTrackPayload (page : string, token : string, compMetrics : mixed) : InstrumentationTrackPayload  {
     return {
         [FPTI_KEY.STATE]:                 'CPL_LATENCY_METRICS',
         [FPTI_KEY.TRANSITION]:            'process_client_metrics',
